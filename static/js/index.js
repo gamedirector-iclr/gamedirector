@@ -83,20 +83,21 @@ function renderInitPicker(){
 }
 function renderInit(){
   const item=initialization.find(x=>x.id===activeInit);
-  const configPanel=(setting,index)=>{
-    const mode=item.winner===(index===0?'a':'b')?'easy':'hard';
-    const bars=Object.entries(setting).map(([key,value])=>{
+  const states=[{letter:'a',value:item.a,suffix:'original'},{letter:'b',value:item.b,suffix:'configured'}];
+  const ordered=item.winner==='a'?states:[states[1],states[0]];
+  const configPanel=(state,index)=>{
+    const mode=state.letter===item.winner?'easy':'hard';
+    const bars=Object.entries(state.value).map(([key,value])=>{
       const max=Math.max(item.a[key],item.b[key])*1.2, hp=key.includes('HP');
       return `<div class="stat-row ${hp?'hp-stat':'attack-stat'}"><span class="stat-name"><img class="stat-icon" src="static/images/${hp?'hp':'attack'}.png" alt="" aria-hidden="true">${key}</span><div class="stat-track" role="meter" aria-label="${key}, State ${index===0?'A':'B'}" aria-valuemin="0" aria-valuemax="${max}" aria-valuenow="${value}" title="Shared scale for both states: 0–${max}"><span style="width:${value/max*100}%"></span></div><b>${value}</b></div>`;
     }).join('');
     return `<div class="state-config"><div class="state-heading"><span class="state-label">State ${index===0?'A':'B'}</span><span class="mode-badge mode-${mode}">(${mode==='easy'?'Easy':'Hard'} Mode)</span></div><div class="state-bars">${bars}</div></div>`;
   };
-  const rolloutPanel=index=>{
-    const suffix=index===0?'original':'configured';
-    return `<div class="video-panel rollout-panel">${media(`static/videos/${item.id}-${suffix}.mp4`,`${item.id}-${suffix}`,`${item.name}, State ${index===0?'A':'B'}`)}</div>`;
+  const rolloutPanel=(state,index)=>{
+    return `<div class="video-panel rollout-panel">${media(`static/videos/${item.id}-${state.suffix}.mp4`,`${item.id}-${state.suffix}`,`${item.name}, State ${index===0?'A':'B'}`)}</div>`;
   };
   const shared=item.id.startsWith('rollout')?'Player HP 500 · Boss HP 500':'Player HP 500';
-  replaceStage('init-stage',`<div class="stage-heading"><h4>${item.name}</h4><span class="shared-state">${shared}</span></div><div class="init-block"><div class="init-block-label">Player-Configurable State Initialization</div><div class="config-grid">${configPanel(item.a,0)+configPanel(item.b,1)}</div></div><div class="init-block init-block-rollout"><div class="init-block-label">Generated Gameplay Rollout</div><div class="video-grid">${rolloutPanel(0)+rolloutPanel(1)}</div></div>${controls('Synchronized state initializations')}`);
+  replaceStage('init-stage',`<div class="stage-heading"><h4>${item.name}</h4><span class="shared-state">${shared}</span></div><div class="init-block"><div class="init-block-label">Player-Configurable State Initialization</div><div class="config-grid">${configPanel(ordered[0],0)+configPanel(ordered[1],1)}</div></div><div class="init-block init-block-rollout"><div class="init-block-label">Generated Gameplay Rollout</div><div class="video-grid">${rolloutPanel(ordered[0],0)+rolloutPanel(ordered[1],1)}</div></div>${controls('Synchronized state initializations')}`);
 }
 $('#init-picker').addEventListener('click',e=>{const b=e.target.closest('[data-init]');if(!b)return;activeInit=b.dataset.init;renderInitPicker();renderInit();});
 let activeSkill='orb_toss';
