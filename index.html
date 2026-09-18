@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="GameDirector: Decoupling Gameplay Logic from Rendering for Player-Configurable Game World Models. Anonymous research project page.">
+  <meta name="theme-color" content="#faf8f5">
+  <title>GameDirector | Player-Configurable Game World Models</title>
+  <link rel="icon" href="static/images/director.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="static/css/index.css?v=1">
+  <script defer src="static/js/index.js?v=1"></script>
+</head>
+<body>
+  <a class="skip-link" href="#abstract">Skip to content</a>
+  <nav class="project-nav" aria-label="Project navigation">
+    <div class="nav-inner"><a class="brand" href="#top"><img src="static/images/director.svg" alt=""><span>Game<span class="blue">Director</span></span></a>
+      <button class="menu-toggle" aria-expanded="false" aria-controls="nav-links">Menu</button>
+      <div id="nav-links"><a href="#abstract" data-nav="abstract">Abstract</a><a href="#dataset" data-nav="dataset">Dataset</a><a href="#method" data-nav="method">Method</a><a href="#visualization" data-nav="visualization">Visualization</a><a href="#experiments" data-nav="experiments">Experiments</a></div>
+    </div>
+  </nav>
+  <main id="top">
+    <header class="publication-header container">
+      <p class="eyebrow">ICLR 2027 · Anonymous submission</p>
+      <h1><span class="title-brand"><img class="title-logo" src="static/images/director.svg" alt=""><span>Game<span class="blue">Director</span></span></span><span class="title-description">Decoupling Gameplay Logic from Rendering<br class="desktop-break"> for Player-Configurable Game World Models</span></h1>
+      <p class="authors">Anonymous Authors</p>
+      <p class="hero-lead"><strong class="tag-configure">Configure</strong> the game. <strong class="tag-direct">Direct</strong> the action. <strong class="tag-generate">Generate</strong> the world.</p>
+      <a class="primary-link" href="#visualization">Explore the visualizations <span aria-hidden="true">↓</span></a>
+
+      <dl class="hero-stats reveal" aria-label="Headline results">
+        <div><dt>Game worlds</dt><dd>3</dd><span>No Rest for the Wicked · Vampire · Hollow Knight</span></div>
+        <div><dt>Characters</dt><dd>13</dd><span>5 players, 8 bosses</span></div>
+        <div><dt>Initial states</dt><dd>Any</dd><span>HP, attack strength and skill meters — set by the player</span></div>
+        <div><dt>Mechanics fidelity</dt><dd>99.6<small>%</small></dd><span>vs. 21–34% for end-to-end baselines</span></div>
+        <div><dt>Decision quality</dt><dd>+15.9<small>%</small></dd><span>Improvement over the best end-to-end baseline</span></div>
+      </dl>
+    </header>
+
+    <section id="abstract" class="section container">
+      <div class="section-head"><span class="section-num">01</span><h2>Abstract</h2></div>
+
+      <div class="abstract-copy reveal"><p>Recent game world models support realistic visual simulation and interactive gameplay based on player inputs. However, they typically learn environment dynamics from pixel-level supervision, jointly modeling perception, memory, state transitions, and rendering within a single end-to-end framework. While this design enables open-ended, action-controllable generation, it still falls short of delivering a complete gameplay experience. Games are governed by explicit mechanics, such as health deduction, skill activation, combat rules, and termination conditions. These mechanics depend on precise and consistent state transitions that generative models alone cannot reliably enforce. In contrast, traditional game engines can guarantee such mechanics through hard-coded rules, but provide limited flexibility for player-driven creation. To bridge these paradigms, we introduce <strong>GameDirector</strong>, the first agentic framework that decouples rule-based gameplay logic from visual rendering. Given player-defined configurations, the framework acts as an intelligent director that interprets visual observations, updates game states, tactically controls NPCs, and enforces gameplay rules. It then translates these decisions into text prompts that guide the video world model to faithfully render the resulting gameplay. This separation allows players to configure characters, states, and rules much like a game developer while preserving coherent game mechanics. Experiments on three games, using data collected by our automated gameplay agent, show that GameDirector achieves accurate state tracking, reliable rule following, and improves boss action quality by more than 15.9% over various end-to-end game world model settings. Overall, by externalizing player-controllable game logic, GameDirector establishes an effective middle ground between hard-coded simulation and generative modeling, enabling more flexible and closed-loop gameplay experiences.</p></div>
+      <figure class="paper-figure reveal"><a href="static/images/teaser.png" target="_blank" rel="noopener"><img src="static/images/teaser.png" alt="GameDirector overview: configurable initialization, an agentic director, and a world model renderer bridge flexible generation and reliable mechanics." loading="lazy"></a><figcaption><strong>Overview of GameDirector.</strong> Our framework bridges hard-coded rules and generative modeling to enable player-configurable, state-aware, and mechanics-consistent gameplay.</figcaption></figure>
+    </section>
+
+    <section id="dataset" class="section container">
+      <div class="section-head"><span class="section-num">02</span><h2>Dataset Construction</h2></div>
+      <p class="dataset-copy reveal">An automated gameplay agent collects synchronized gameplay videos, player controls, boss actions and engine-internal states across <em>No Rest for the Wicked</em>, <em>Vampire</em> and <em>Hollow Knight</em>. The dataset contains <strong>51,758 clips</strong> spanning <strong>13 characters</strong>—5 players and 8 bosses—with 300 clips reserved for evaluation (100 per game).</p>
+      <figure class="paper-figure dataset-figure reveal">
+        <a href="static/images/data.png" target="_blank" rel="noopener"><img src="static/images/data.png" alt="Dataset construction pipeline: automated keyboard and mouse control, gameplay recording, time-aligned spatial and combat state collection, then filtering, synchronization and annotation." loading="lazy"></a>
+        <figcaption>Spatial states (positions, distances and angles) and combat states (health points, skill meters and executed skills) are aligned on a shared timeline. Irrelevant segments are filtered out, and raw control and action logs become structured prompts for gameplay generation and visual understanding.</figcaption>
+      </figure>
+    </section>
+
+    <section id="method" class="section container">
+      <div class="section-head"><span class="section-num">03</span><h2>Method</h2></div>
+      <p class="section-lead method-lead reveal"><strong class="tag-configure">The player</strong> sets the stage. <strong class="tag-direct">The director</strong> decides what happens. <strong class="tag-generate">The painter</strong> brings it to life.</p>
+      <figure class="paper-figure reveal"><a href="static/images/method.png" target="_blank" rel="noopener"><img src="static/images/method.png" alt="GameDirector architecture: player configurations feed visual understanding, explicit state tracking, a 2B action planner and rule enforcement; validated prompts guide video generation in a closed loop." loading="lazy"></a></figure>
+      <div class="method-grid reveal">
+        <article><span class="step">01</span><h3>Configure</h3><p>Select the scene, characters and skills. Set health points, attack strengths, skill meters and skill-specific rules.</p></article>
+        <article><span class="step">02</span><h3>Direct</h3><p>AttackNet and SituationNet interpret combat. Explicit states, a 2B language-model planner and rule enforcement determine valid actions.</p></article>
+        <article><span class="step">03</span><h3>Generate</h3><p>A Wan2.2-TI2V-5B world model renders structured prompts. Visual feedback closes the loop between game logic and generation.</p></article>
+      </div>
+    </section>
+
+    <section id="visualization" class="section visualization-section">
+      <div class="wide-container">
+        <div class="section-head"><span class="section-num">04</span><h2>Visualization</h2></div>
+
+        <section id="initialization" class="showcase reveal">
+          <div class="chapter-heading"><span class="chapter-number">01</span><div><h3>Player-configurable initialization</h3><p>The same director narrates two different starting configurations — health, attack strength and skill meters — while the rendered gameplay stays faithful to each state.</p></div></div>
+          <div class="viewer" id="initialization-viewer">
+            <div class="example-picker" id="init-picker" aria-label="Select an initialization comparison"></div>
+            <div id="init-stage"></div>
+          </div>
+        </section>
+
+        <section id="skill-transfer" class="showcase reveal">
+          <div class="chapter-heading"><span class="chapter-number purple">02</span><div><h3>Cross-character skill transfer</h3><p>A skill learned on one boss is reassigned to another. The director keeps the action legible while the world model preserves each character's appearance.</p></div></div>
+          <div class="viewer transfer-viewer">
+            <div class="viewer-toolbar"><div><div class="segmented" id="skill-picker" aria-label="Transferred skill"><button data-skill="orb_toss" aria-pressed="true">Orb Toss</button><button data-skill="needle_throw" aria-pressed="false">Needle Throw</button><button data-skill="jump_slam" aria-pressed="false">Jump Slam</button></div></div><span class="transfer-direction" id="transfer-direction">Hornet → Broken Vessel / Dung Defender</span></div>
+            <div id="transfer-stage"></div>
+          </div>
+        </section>
+
+        <section id="boss-planning" class="showcase reveal">
+          <div class="chapter-heading"><span class="chapter-number green">03</span><div><h3>Adaptive boss action planning</h3><p>Given the spatial context, the 2B action planner selects a skill consistent with distance, facing and cooldown rules — and the render follows through.</p></div></div>
+          <div class="viewer planning-viewer"><div class="example-picker planning-picker" id="planning-picker" aria-label="Boss planning scenarios"></div><div id="planning-stage"></div></div>
+        </section>
+      </div>
+    </section>
+
+    <section id="experiments" class="section container">
+      <div class="section-head"><span class="section-num">05</span><h2>Quantitative Results</h2></div>
+      <p class="section-lead reveal">GameDirector's agentic control outperforms every end-to-end game world model baseline on state alignment, mechanics fidelity and boss decision quality.</p>
+
+      <dl class="metric-grid reveal" aria-label="Headline metrics from Table 1">
+        <div><dt>State alignment</dt><dd>100<small>%</small></dd><p>Tracked states always follow game mechanics — HP and skill meters update exactly as they should.</p></div>
+        <div><dt>Mechanics fidelity</dt><dd>99.6<small>%</small></dd><p>VLM-judged adherence to termination and cooldown rules, best across both GPT-5.5 and Gemini judges.</p></div>
+        <div><dt>Decision quality</dt><dd>93.0<small>%</small></dd><p>Boss actions fit the spatial context and available skills, up to +20 points over the best baseline.</p></div>
+        <div><dt>Visual understanding</dt><dd>&gt;90<small>%</small></dd><p>AttackNet's hit detection and SituationNet's spatial classification both exceed 90% accuracy across all three games.</p></div>
+      </dl>
+
+      <div class="table-scroll reveal" role="region" aria-label="Main experimental results" tabindex="0"><table class="paper-table main-results">
+<caption><strong>Table 1.</strong> Comparison of different state modeling and boss control strategies. Each setting adopts a representative method with minimal adaptation, and all methods are trained using the same dataset. We use N = 3 VLM evaluations and “--” denotes metrics that are not applicable to a given method.</caption>
+<thead><tr><th></th><th colspan="2" class="group-end" scope="colgroup">State Modeling</th><th colspan="2" class="group-end" scope="colgroup">Boss Control</th><th rowspan="2" class="group-end" scope="col"><button class="metric-help" type="button" data-tooltip="Whether tracked states follow game mechanics: HP decreases on valid hits and skill meters increase or reset appropriately. Higher is better." aria-label="State Align. (%) ↑: Whether tracked states follow game mechanics: HP decreases on valid hits and skill meters increase or reset appropriately. Higher is better.">State Align.<br>(%) ↑</button></th><th colspan="2" class="group-end" scope="colgroup"><button class="metric-help" type="button" data-tooltip="Whether generated gameplay follows rules, including termination at zero HP and skill cooldowns. Evaluated by VLM judges; higher is better." aria-label="Mechanics Fidelity (%) ↑: Whether generated gameplay follows rules, including termination at zero HP and skill cooldowns. Evaluated by VLM judges; higher is better.">Mechanics Fidelity (%) ↑</button></th><th colspan="2" scope="colgroup"><button class="metric-help" type="button" data-tooltip="Whether boss actions suit the current spatial context and available skills. Evaluated by VLM judges; higher is better." aria-label="Decision Quality (%) ↑: Whether boss actions suit the current spatial context and available skills. Evaluated by VLM judges; higher is better.">Decision Quality (%) ↑</button></th></tr>
+<tr><th scope="col">Setting</th><th scope="col">None</th><th class="group-end" scope="col">Predictive</th><th scope="col">Implicit</th><th class="group-end" scope="col">Explicit</th><th scope="col">GPT-5.5</th><th class="group-end" scope="col">Gemini</th><th scope="col">GPT-5.5</th><th scope="col">Gemini</th></tr></thead><tbody>
+<tr><th scope="row">(1) Matrix-Game</th><td>✓</td><td class="group-end"></td><td>✓</td><td class="group-end"></td><td class="group-end">--</td><td>25.1<sub>± 0.7</sub></td><td class="group-end">25.0<sub>± 0.3</sub></td><td>56.5<sub>± 0.3</sub></td><td>56.8<sub>± 0.3</sub></td></tr>
+<tr><th scope="row">(2) ReactiveGWM</th><td>✓</td><td class="group-end"></td><td></td><td class="group-end">✓</td><td class="group-end">--</td><td>21.4<sub>± 0.2</sub></td><td class="group-end">21.4<sub>± 0.1</sub></td><td>72.5<sub>± 0.8</sub></td><td>72.4<sub>± 0.2</sub></td></tr>
+<tr><th scope="row">(3) WildWorld</th><td></td><td class="group-end">✓</td><td>✓</td><td class="group-end"></td><td class="group-end">70.38</td><td>34.3<sub>± 0.5</sub></td><td class="group-end">34.1<sub>± 0.4</sub></td><td>65.9<sub>± 0.3</sub></td><td>66.2<sub>± 0.4</sub></td></tr>
+<tr><th scope="row">(4) StatePlay</th><td></td><td class="group-end">✓</td><td></td><td class="group-end">✓</td><td class="group-end">72.01</td><td>28.1<sub>± 0.3</sub></td><td class="group-end">28.2<sub>± 0.1</sub></td><td>71.9<sub>± 0.3</sub></td><td>73.0<sub>± 0.3</sub></td></tr>
+<tr class="ours"><th scope="row"><strong>GameDirector</strong> (Ours)</th><td colspan="2" class="group-end">Agentic</td><td colspan="2" class="group-end">Agentic</td><td class="group-end">100.0</td><td>98.5<sub>± 0.2</sub></td><td class="group-end">99.6<sub>± 0.2</sub></td><td>88.4<sub>± 0.7</sub></td><td>93.0<sub>± 0.6</sub></td></tr></tbody></table></div>
+      <div class="table-scroll reveal" role="region" aria-label="Visual understanding results" tabindex="0"><table class="paper-table"><caption><strong>Table 2.</strong> Performance of AttackNet and SituationNet in Visual Understanding across three games.</caption><thead><tr><th></th><th colspan="2" class="group-end" scope="colgroup">AttackNet</th><th colspan="5" scope="colgroup">SituationNet</th></tr><tr><th scope="col">Game</th><th scope="col"><button class="metric-help" type="button" data-tooltip="Unweighted mean of per-class F1 scores for hit detection, balancing precision and recall. Higher is better." aria-label="Macro-F1 ↑: Unweighted mean of per-class F1 scores for hit detection, balancing precision and recall. Higher is better.">Macro-F1 ↑</button></th><th scope="col" class="group-end"><button class="metric-help" type="button" data-tooltip="Percentage of correctly classified hit events by AttackNet. Higher is better." aria-label="Accuracy (%) ↑: Percentage of correctly classified hit events by AttackNet. Higher is better.">Accuracy (%) ↑</button></th><th scope="col"><button class="metric-help" type="button" data-tooltip="Mean absolute error between predicted and reference player–boss distance. Lower is better." aria-label="Dist. MAE ↓: Mean absolute error between predicted and reference player–boss distance. Lower is better.">Dist. MAE ↓</button></th><th scope="col"><button class="metric-help" type="button" data-tooltip="Mean absolute angular error in degrees for the relative facing direction. Lower is better." aria-label="Angle MAE (°) ↓: Mean absolute angular error in degrees for the relative facing direction. Lower is better.">Angle MAE (°) ↓</button></th><th scope="col"><button class="metric-help" type="button" data-tooltip="Accuracy in identifying whether the target is ahead of the boss. Higher is better." aria-label="Front-Cone (%) ↑: Accuracy in identifying whether the target is ahead of the boss. Higher is better.">Front-Cone (%) ↑</button></th><th scope="col"><button class="metric-help" type="button" data-tooltip="Accuracy in identifying whether the target is within the actionable range. Higher is better." aria-label="Decision-Zone (%) ↑: Accuracy in identifying whether the target is within the actionable range. Higher is better.">Decision-Zone (%) ↑</button></th><th scope="col"><button class="metric-help" type="button" data-tooltip="Accuracy in classifying the target’s relative direction. Higher is better." aria-label="Tactical-Sector (%) ↑: Accuracy in classifying the target’s relative direction. Higher is better.">Tactical-Sector (%) ↑</button></th></tr></thead><tbody><tr><th scope="row">Game N</th><td>0.8476</td><td class="group-end">90.53</td><td>0.3556</td><td>10.91</td><td>89.29</td><td>87.06</td><td>86.95</td></tr>
+<tr><th scope="row">Game V</th><td>0.9135</td><td class="group-end">92.48</td><td>0.1876</td><td>2.22</td><td>96.72</td><td>96.31</td><td>96.31</td></tr>
+<tr><th scope="row">Game H</th><td>0.8871</td><td class="group-end">96.11</td><td>0.2637</td><td>6.39</td><td>96.49</td><td>96.49</td><td>96.49</td></tr>
+<tr class="ours"><th scope="row">Average</th><td>0.8906</td><td class="group-end">92.94</td><td>0.2690</td><td>6.51</td><td>94.17</td><td>93.29</td><td>93.25</td></tr></tbody></table></div>
+      <p class="footnote">Game N: No Rest for the Wicked · Game V: Vampire · Game H: Hollow Knight.</p>
+    </section>
+  </main>
+  <footer>
+    <a class="back-to-top" href="#top">Back to top ↑</a>
+    <p>GameDirector · Anonymous research project · ICLR 2027</p>
+  </footer>
+  <noscript><p class="noscript">Enable JavaScript to explore the interactive video comparisons. The abstract, method and quantitative results are available above.</p></noscript>
+</body>
+</html>

@@ -1,0 +1,13 @@
+{
+  "name": "gamedirector",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Standalone static project page for GameDirector.",
+  "scripts": {
+    "start": "node scripts/serve.mjs",
+    "dev": "node scripts/serve.mjs"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
